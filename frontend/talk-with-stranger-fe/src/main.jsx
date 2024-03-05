@@ -1,0 +1,18 @@
+import React from "react";
+import ReactDOM from "react-dom/client";
+import App from "./views/App.jsx";
+import "./styles/global.scss";
+import { ThemeProvider } from "@mui/material/styles";
+import theme from "./store/theme.jsx";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { AdapterMoment } from "@mui/x-date-pickers/AdapterMoment";
+
+ReactDOM.createRoot(document.getElementById("root")).render(
+  <React.StrictMode>
+    <LocalizationProvider dateAdapter={AdapterMoment}>
+      <ThemeProvider theme={theme}>
+        <App />
+      </ThemeProvider>
+    </LocalizationProvider>
+  </React.StrictMode>
+);
