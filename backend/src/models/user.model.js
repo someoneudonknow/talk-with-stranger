@@ -39,7 +39,6 @@ module.exports = (sequelize, { DataTypes }) => {
       user_major: DataTypes.STRING(20),
       user_role: {
         type: DataTypes.ENUM("user", "admin"),
-        allowNull: false,
         default: "user",
       },
       user_dob: {

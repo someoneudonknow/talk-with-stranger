@@ -1,10 +1,10 @@
 "use strict";
 
-const TABLE_NAME = "key_token";
+const TABLE_NAME = "refresh_token";
 
 module.exports = (sequelize, { DataTypes }) => {
   const KeyToken = sequelize.define(
-    "KeyToken",
+    "RefreshToken",
     {
       id: {
         type: DataTypes.UUID,
@@ -12,25 +12,17 @@ module.exports = (sequelize, { DataTypes }) => {
         primaryKey: true,
         allowNull: false,
       },
-      user_id: {
+      belongs_to: {
         type: DataTypes.UUID,
-        allowNull: false,
         references: {
-          model: "user",
+          model: "key_token",
           key: "id",
+          onDelete: "CASCADE",
         },
       },
-      public_key: {
+      token: {
         type: DataTypes.TEXT("medium"),
         allowNull: false,
-      },
-      private_key: {
-        type: DataTypes.TEXT("medium"),
-        allowNull: false,
-      },
-      refresh_token: {
-        type: DataTypes.TEXT("medium"),
-        allowNull: true,
       },
     },
     {

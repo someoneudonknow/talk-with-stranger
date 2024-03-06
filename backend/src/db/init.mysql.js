@@ -13,6 +13,8 @@ class DB {
   constructor() {}
 
   async connect({ log = true }) {
+    const _this = this;
+
     const dbOptions = {
       host: host,
       port: port,
@@ -22,7 +24,7 @@ class DB {
         underscored: true,
       },
       pool: {
-        max: 5,
+        max: 15,
         min: 0,
         acquire: 30000,
         idle: 10000,
@@ -34,15 +36,14 @@ class DB {
 
     sequelize
       .authenticate()
-      .then(() =>
-        console.log("\x1b[32m%s", "Successfully connected to database")
-      )
+      .then(() => {
+        console.log("\x1b[32m%s", "Successfully connected to database");
+        _this.sequelize = sequelize;
+        _this.Sequelize = Sequelize;
+
+        _this.registerModels();
+      })
       .catch((err) => console.log("Error connecting to database::" + err));
-
-    this.sequelize = sequelize;
-    this.Sequelize = Sequelize;
-
-    this.registerModels();
   }
 
   registerModels() {
