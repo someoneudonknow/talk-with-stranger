@@ -15,8 +15,10 @@ import Typography from "@mui/material/Typography";
 import Checkbox from "@mui/material/Checkbox";
 import LoadingButton from "@mui/lab/LoadingButton";
 import { useForm } from "react-hook-form";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { signIn } from "../../store/userSlice";
 
 const SignInView = () => {
   const {
@@ -26,8 +28,15 @@ const SignInView = () => {
   } = useForm();
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
+  const { isLoading, currentUser } = useSelector((state) => state.user);
+  const dispatch = useDispatch();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (currentUser) {
+      navigate("/home/profile");
+    }
+  }, [currentUser, dispatch]);
 
   const handleShowPasswordClicked = () => setShowPassword((isShow) => !isShow);
   const handleRememerMeBtnClicked = (e) => {
@@ -42,13 +51,15 @@ const SignInView = () => {
   };
 
   const onSubmit = async (data) => {
-    setIsLoading(true);
     const submitedData = {
-      ...data,
+      userData: {
+        email: data.email,
+        password: data.password,
+      },
       isRememberMe: rememberMe,
     };
-    await setTimeout(() => setIsLoading(false), 3000);
-    console.log(submitedData);
+
+    dispatch(signIn(submitedData));
   };
 
   return (

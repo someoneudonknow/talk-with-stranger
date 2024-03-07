@@ -12,7 +12,7 @@ const { createTokensPair } = require("../utils/auth.utils");
 const { pickDataInfo } = require("../utils");
 
 class AccessService {
-  static signUp = async ({ email, password, firstName, lastName }) => {
+  static signUp = async ({ email, password, firstName, lastName, gender }) => {
     const foundUser = await db.User.findOne({
       where: {
         user_email: email,
@@ -23,14 +23,15 @@ class AccessService {
 
     try {
       const result = await db.sequelize.transaction(async (t) => {
-        const hasedPassword = await bcrypt.hash(password, 10);
+        const hashedPassword = await bcrypt.hash(password, 10);
 
         const newUser = await db.User.create(
           {
             user_email: email,
-            user_password: hasedPassword,
+            user_password: hashedPassword,
             user_first_name: firstName,
             user_last_name: lastName,
+            user_gender: gender,
           },
           { transaction: t }
         );

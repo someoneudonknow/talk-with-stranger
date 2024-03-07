@@ -8,11 +8,12 @@ const express = require("express");
 const errorController = require("./controller/error.controller");
 const appRouter = require("./routes/RESTApi/index");
 const { NotFoundError } = require("./core/error.response");
-const AccessService = require("./services/access.service.js");
+const cors = require("cors");
 
 const app = express();
 
 // init middlewares
+app.use(cors());
 app.use(morgan("dev"));
 app.use(helmet());
 app.use(compression());

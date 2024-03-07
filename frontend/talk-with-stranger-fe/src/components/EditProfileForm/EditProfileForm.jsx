@@ -88,7 +88,7 @@ const EditProfileForm = ({ onSubmit }) => {
               render={({ field }) => {
                 return (
                   <DatePicker
-                    label="Date"
+                    label="Date Of Birth"
                     value={field.value}
                     inputRef={field.ref}
                     onChange={(date) => {

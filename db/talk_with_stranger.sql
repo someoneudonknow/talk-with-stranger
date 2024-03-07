@@ -27,3 +27,15 @@ CREATE TABLE IF NOT EXISTS `user` (
     CONSTRAINT chk_dob CHECK (`user_dob` < NOW())
     CONSTRAINT fk_user_conntry FOREIGN KEY(`user_country`) REFERENCES `country`(`id`)
 )
+
+SELECT CONSTRAINT_NAME FROM  information_schema.KEY_COLUMN_USAGE
+      where TABLE_NAME = 'user'
+      
+select * from `user`
+select * from `key_token`
+select * from `country`
+select * from `refresh_token`
+
+select * from `user` where `user`.id not in (select `user_id` from `key_token`)
+
+delete from `key_token` where 
