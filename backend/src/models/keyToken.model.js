@@ -19,6 +19,7 @@ module.exports = (sequelize, { DataTypes }) => {
           model: "user",
           key: "id",
         },
+        onDelete: "CASCADE",
       },
       public_key: {
         type: DataTypes.TEXT("medium"),

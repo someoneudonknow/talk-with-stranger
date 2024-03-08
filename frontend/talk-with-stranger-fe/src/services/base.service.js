@@ -11,10 +11,11 @@ class BaseService {
       ...customHeaders,
     };
 
-    if (withAuth.withAuth) {
+    if (withAuth) {
       headers = {
         ...headers,
-        Authorization: `${localStorage.getItem("access_token") || ""}`,
+        Authorization: `${localStorage.getItem("accessToken") || ""}`,
+        "x-client-id": `${localStorage.getItem("uid") || ""}`,
       };
     }
 
@@ -39,31 +40,40 @@ class BaseService {
     );
   }
 
-  async post(url, data = {}, customHeaders = {}, options = {}) {
+  async post(url, data = {}, options = {}) {
     return await this.handleReponseError(
       await fetch(`${this.baseUrl}${url}`, {
         method: "POST",
-        headers: this.getHeaders({ customHeaders, withAuth: options.withAuth }),
+        headers: this.getHeaders({
+          customHeaders: options?.customHeaders,
+          withAuth: options.withAuth,
+        }),
         body: JSON.stringify(data),
       })
     );
   }
 
-  async patch(url, data = {}, customHeaders = {}, options = {}) {
+  async patch(url, data = {}, options = {}) {
     return await this.handleReponseError(
       await fetch(`${this.baseUrl}${url}`, {
         method: "PATCH",
-        headers: this.getHeaders({ customHeaders, withAuth: options.withAuth }),
+        headers: this.getHeaders({
+          customHeaders: options?.customHeaders,
+          withAuth: options.withAuth,
+        }),
         body: JSON.stringify(data),
       })
     );
   }
 
-  async delete(url, data = {}, customHeaders = {}, options = {}) {
+  async delete(url, data = {}, options = {}) {
     return await this.handleReponseError(
       await fetch(`${this.baseUrl}${url}`, {
         method: "DELETE",
-        headers: this.getHeaders({ customHeaders, withAuth: options.withAuth }),
+        headers: this.getHeaders({
+          customHeaders: options?.customHeaders,
+          withAuth: options.withAuth,
+        }),
         body: JSON.stringify(data),
       })
     );

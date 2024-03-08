@@ -33,15 +33,31 @@ export const signIn = createAsyncThunk(
   }
 );
 
+export const signOut = createAsyncThunk(
+  "/user/sign-out",
+  async (payload, { rejectWithValue }) => {
+    try {
+      const response = await authService.logOut();
+
+      return response;
+    } catch (err) {
+      return rejectWithValue(err.message);
+    }
+  }
+);
+
 const userSlice = createSlice({
   name: "user",
   initialState: {
+    userToken: localStorage.getItem("refreshToken") || null,
     currentUser: null,
-    error: false,
-    errorMessage: "",
     isLoading: false,
   },
-  reducers: {},
+  reducers: {
+    setCurrentUser: (state, { payload }) => {
+      state.currentUser = payload;
+    },
+  },
   extraReducers: (builder) => {
     builder
       .addCase(signUp.pending, (state) => {
@@ -49,6 +65,10 @@ const userSlice = createSlice({
       })
       .addCase(signUp.fulfilled, (state, { payload }) => {
         toast.success(payload?.message);
+
+        localStorage.setItem("accessToken", payload?.tokens?.accessToken);
+        localStorage.setItem("uid", payload?.user?.id);
+
         return {
           ...state,
           isLoading: false,
@@ -69,16 +89,19 @@ const userSlice = createSlice({
         return { ...state, isLoading: true };
       })
       .addCase(signIn.fulfilled, (state, { payload }) => {
-        toast.success(payload?.user?.message);
+        const {
+          message,
+          metadata: { user, tokens },
+        } = payload.user;
+        toast.success(message);
 
-        if (payload?.rememberMe) {
-          localStorage.setItem("refreshToken", payload?.tokens?.accessToken);
-        }
+        localStorage.setItem("accessToken", tokens?.accessToken);
+        localStorage.setItem("uid", user?.id);
 
         return {
           ...state,
           isLoading: false,
-          currentUser: payload?.user?.metadata?.user,
+          currentUser: user,
         };
       })
       .addCase(signIn.rejected, (state, action) => {
@@ -89,8 +112,31 @@ const userSlice = createSlice({
           currentUser: null,
         };
       });
+
+    builder
+      .addCase(signOut.pending, (state) => {
+        return { ...state, isLoading: true };
+      })
+      .addCase(signOut.fulfilled, (state, { payload }) => {
+        toast.success(payload?.message);
+
+        localStorage.removeItem("accessToken");
+
+        return {
+          ...state,
+          isLoading: false,
+          currentUser: null,
+        };
+      })
+      .addCase(signOut.rejected, (state, { payload }) => {
+        toast.error(payload);
+        return {
+          ...state,
+          isLoading: false,
+        };
+      });
   },
 });
 
-export const { actions } = userSlice;
+export const { setCurrentUser } = userSlice.actions;
 export default userSlice.reducer;

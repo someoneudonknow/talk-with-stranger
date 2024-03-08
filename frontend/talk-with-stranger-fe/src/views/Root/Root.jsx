@@ -13,13 +13,11 @@ const RootView = () => {
       <ToastContainer
         position="top-right"
         autoClose={5000}
-        newestOnTop={false}
+        newestOnTop={true}
         closeOnClick
         rtl={false}
-        pauseOnFocusLoss
         draggable
-        pauseOnHover
-        theme="light"
+        theme="dark"
         transition="Bounce"
       />
       <ToastContainer />

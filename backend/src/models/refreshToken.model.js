@@ -17,8 +17,8 @@ module.exports = (sequelize, { DataTypes }) => {
         references: {
           model: "key_token",
           key: "id",
-          onDelete: "CASCADE",
         },
+        onDelete: "CASCADE",
       },
       token: {
         type: DataTypes.TEXT("medium"),

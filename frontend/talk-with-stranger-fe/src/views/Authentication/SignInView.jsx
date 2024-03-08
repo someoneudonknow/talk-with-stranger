@@ -36,7 +36,7 @@ const SignInView = () => {
     if (currentUser) {
       navigate("/home/profile");
     }
-  }, [currentUser, dispatch]);
+  }, [currentUser]);
 
   const handleShowPasswordClicked = () => setShowPassword((isShow) => !isShow);
   const handleRememerMeBtnClicked = (e) => {

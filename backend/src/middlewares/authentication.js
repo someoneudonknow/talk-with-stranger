@@ -8,7 +8,7 @@ const jwt = require("jsonwebtoken");
 const headers = {
   AUTHORIZATION: "authorization",
   CLIENT_ID: "x-client-id",
-  REFRESH_TOKEN: "refreshToken",
+  REFRESH_TOKEN: "refresh-token",
 };
 
 const authentication = asyncHandler(async (req, res, next) => {
@@ -35,6 +35,8 @@ const authentication = asyncHandler(async (req, res, next) => {
 
     if (decodedRefreshToken.userId !== clientId)
       throw new AuthFailureError("Invalid token");
+
+    console.log(decodedRefreshToken);
 
     req.keyToken = keyTokenStored;
     req.user = decodedRefreshToken;

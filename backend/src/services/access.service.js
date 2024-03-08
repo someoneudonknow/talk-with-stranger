@@ -4,6 +4,7 @@ const {
   ConflictError,
   BadRequestError,
   AuthFailureError,
+  ForbiddenError,
 } = require("../core/error.response");
 const db = require("../db/init.mysql");
 const bcrypt = require("bcrypt");
@@ -12,6 +13,96 @@ const { createTokensPair } = require("../utils/auth.utils");
 const { pickDataInfo } = require("../utils");
 
 class AccessService {
+  static refreshTheToken = async ({ refreshToken, userInfo, keyToken }) => {
+    if (!refreshToken) throw new BadRequestError("Refresh token not provided");
+
+    const { userId, email } = userInfo;
+
+    const refreshTokensUsed = await db.RefreshToken.findAll({
+      where: {
+        belongs_to: keyToken.id,
+      },
+    });
+
+    if (
+      refreshTokensUsed.length > 0 &&
+      refreshTokensUsed.find((tk) => tk.token === refreshToken)
+    ) {
+      const tokenFound = await db.KeyToken.findOne({ user_id: userId });
+
+      await tokenFound.destroy();
+
+      throw new ForbiddenError(
+        "There was a suspicious behaviour of your account please log in again"
+      );
+    }
+
+    if (keyToken.refresh_token !== refreshToken)
+      throw new BadRequestError("Your not logged in");
+
+    const foundUser = await db.User.findOne({
+      where: {
+        user_email: email,
+      },
+    });
+
+    if (!foundUser) throw new BadRequestError("Your not registered");
+
+    const newTokenPair = await createTokensPair(
+      {
+        userId: foundUser.id,
+        email: foundUser.user_email,
+      },
+      keyToken.private_key,
+      keyToken.public_key
+    );
+
+    try {
+      await db.sequelize.transaction(async (t) => {
+        await db.RefreshToken.create(
+          {
+            belongs_to: keyToken.id,
+            token: refreshToken,
+          },
+          {
+            transaction: t,
+          }
+        );
+
+        const needUpdateKeyToken = await db.KeyToken.findOne(
+          {
+            where: {
+              id: keyToken.id,
+            },
+          },
+          { transaction: t }
+        );
+
+        needUpdateKeyToken.update({ refresh_token: newTokenPair.refreshToken });
+
+        needUpdateKeyToken.save();
+      });
+    } catch (err) {
+      throw new BadRequestError("Something went wrong");
+    }
+
+    return {
+      user: pickDataInfo(foundUser.toJSON(), [
+        "id",
+        "user_first_name",
+        "user_last_name",
+        "user_email",
+        "user_avatar",
+        "user_background",
+        "user_description",
+        "user_major",
+        "user_role",
+        "user_dob",
+      ]),
+      tokens: newTokenPair,
+    };
+  };
+
   static signUp = async ({ email, password, firstName, lastName, gender }) => {
     const foundUser = await db.User.findOne({
       where: {
@@ -63,7 +154,7 @@ class AccessService {
         const tokenPair = await createTokensPair(
           {
             userId: newUser.id,
-            email: newUser.email,
+            email: newUser.user_email,
           },
           privateKey,
           publicKey
@@ -131,7 +222,7 @@ class AccessService {
         const tokenPair = await createTokensPair(
           {
             userId: foundUser.id,
-            email: foundUser.email,
+            email: foundUser.user_email,
           },
           privateKey,
           publicKey

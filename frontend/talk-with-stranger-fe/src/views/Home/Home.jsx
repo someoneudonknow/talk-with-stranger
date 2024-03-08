@@ -18,11 +18,63 @@ import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
 import PhotoCameraFrontIcon from "@mui/icons-material/PhotoCameraFront";
 import AccountBoxIcon from "@mui/icons-material/AccountBox";
-import { Avatar, Container, Tooltip } from "@mui/material";
+import { Avatar, Container, Menu, MenuItem, Tooltip } from "@mui/material";
 import { deepPurple } from "@mui/material/colors";
 import { Outlet, useNavigate } from "react-router-dom";
+import { Logout } from "@mui/icons-material";
+import { useDispatch, useSelector } from "react-redux";
+import { signOut } from "../../store/userSlice";
 
 const drawerWidth = 240;
+
+const AvatarMenu = ({ anchor, onAnchorClose, onLogoutClicked }) => {
+  const open = !!anchor;
+
+  return (
+    <>
+      <Menu
+        anchorEl={anchor}
+        open={open}
+        onClose={onAnchorClose}
+        slotProps={{
+          paper: {
+            elevation: 0,
+            sx: {
+              overflow: "visible",
+              filter: "drop-shadow(0px 2px 8px rgba(0,0,0,0.32))",
+              mt: 0.7,
+              "& .MuiAvatar-root": {
+                width: 32,
+                height: 32,
+                ml: -0.5,
+                mr: 1,
+              },
+            },
+          },
+        }}
+        transformOrigin={{ horizontal: "left", vertical: "top" }}
+        anchorOrigin={{ horizontal: "left", vertical: "bottom" }}
+      >
+        <MenuItem
+          onClick={() => {
+            onLogoutClicked();
+            onAnchorClose();
+          }}
+        >
+          {" "}
+          <Logout />
+          <span
+            style={{
+              marginLeft: "10px",
+            }}
+          >
+            Log out
+          </span>
+        </MenuItem>
+      </Menu>
+    </>
+  );
+};
 
 const openedMixin = (theme) => ({
   width: drawerWidth,
@@ -92,7 +144,26 @@ const Drawer = styled(MuiDrawer, {
 export default function Home() {
   const theme = useTheme();
   const [open, setOpen] = React.useState(false);
+  const [anchor, setAnchor] = React.useState(false);
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const { currentUser } = useSelector((state) => state.user);
+
+  React.useEffect(() => {
+    if (!currentUser) {
+      navigate("/auth/signin", {
+        replace: true,
+      });
+    }
+  }, [currentUser]);
+
+  const onAvatarClick = (e) => {
+    setAnchor(e.currentTarget);
+  };
+
+  const closeMenu = () => {
+    setAnchor(null);
+  };
 
   const handleDrawerOpen = () => {
     setOpen(true);
@@ -100,6 +171,10 @@ export default function Home() {
 
   const handleDrawerClose = () => {
     setOpen(false);
+  };
+
+  const handleLogoutClicked = () => {
+    dispatch(signOut());
   };
 
   const handleSideBarItemClicked = (index) => {
@@ -140,7 +215,15 @@ export default function Home() {
           >
             <MenuIcon />
           </IconButton>
-          <Avatar sx={{ mr: 2 }}></Avatar>
+          <Avatar
+            onClick={onAvatarClick}
+            sx={{ mr: 2, cursor: "pointer" }}
+          ></Avatar>
+          <AvatarMenu
+            anchor={anchor}
+            onAnchorClose={closeMenu}
+            onLogoutClicked={handleLogoutClicked}
+          />
           <Typography variant="h6" noWrap component="div">
             UserName
           </Typography>

@@ -14,6 +14,16 @@ class AuthService extends BaseService {
   async signIn(payload) {
     return await this.post("/users/signin", payload);
   }
+
+  async logOut() {
+    return await this.post(
+      "/users/signout",
+      {},
+      {
+        withAuth: true,
+      }
+    );
+  }
 }
 
 export default AuthService;
