@@ -1,10 +1,25 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Edit, Flag, Upload } from "@mui/icons-material";
 import { Avatar, Box, Button, Stack, Typography } from "@mui/material";
+import moment from "moment";
 
-const UserProfileCard = ({ user, onAvatarSelect }) => {
-  const { userFirstName, userLastName } = user;
+const UserProfileCard = ({ user, onAvatarSelect, onBackgroundSelect }) => {
+  const {
+    user_first_name,
+    user_last_name,
+    user_description,
+    user_dob,
+    user_avatar,
+    user_background,
+    user_major,
+  } = user;
   const [hover, setHover] = useState(false);
+
+  const calculateAge = useMemo(() => {
+    if (!user_dob) return "unknown";
+
+    return moment().diff(moment(user_dob), "years");
+  }, [user_dob]);
 
   const handleMouseEnterAvatar = () => {
     setHover(true);
@@ -31,15 +46,27 @@ const UserProfileCard = ({ user, onAvatarSelect }) => {
         sx={{
           borderRadius: "calc(10px - 1px)",
           position: "relative",
-          height: "100px",
+          height: "130px",
           width: "100%",
-          backgroundColor: "#4158D0",
-          backgroundImage:
-            "linear-gradient(43deg, #4158D0 0%, #C850C0 46%, #FFCC70 100%)",
+          backgroundColor:
+            "linear-gradient(43deg, #4158D0 0%, #C850C0 46%, #FFCC70 100%), ",
+          backgroundImage: `url(${user_background})`,
+          backgroundPosition: "center",
+          backgroundRepeat: "no-repeat",
+          backgroundSize: "cover",
         }}
       >
+        <input
+          accept="image/*"
+          id="background-upload"
+          type="file"
+          onChange={onBackgroundSelect}
+          hidden
+        />
         <Button
           size="small"
+          component="label"
+          htmlFor="background-upload"
           sx={{
             position: "absolute",
             right: "10px",
@@ -54,20 +81,20 @@ const UserProfileCard = ({ user, onAvatarSelect }) => {
           Edit background
         </Button>
       </Box>
-      <Avatar
+      <Box
         sx={{
           width: "90px",
           height: "90px",
           marginTop: "-45px",
           ml: 1,
-          border: "5px solid rgba(255, 255, 255)",
+          position: "relative",
         }}
         onMouseEnter={handleMouseEnterAvatar}
         onMouseLeave={handleMouseLeaveAvatar}
       >
         <input
           accept="image/*"
-          id="raised-button-file"
+          id="avatar-upload"
           type="file"
           onChange={onAvatarSelect}
           hidden
@@ -77,8 +104,12 @@ const UserProfileCard = ({ user, onAvatarSelect }) => {
             style={{
               height: "100%",
               width: "100%",
+              zIndex: "10",
+              position: "absolute",
+              top: "0",
+              left: "0",
             }}
-            htmlFor="raised-button-file"
+            htmlFor="avatar-upload"
           >
             <Button
               variant="raise"
@@ -90,23 +121,40 @@ const UserProfileCard = ({ user, onAvatarSelect }) => {
                 width: "100%",
               }}
             >
-              <Upload />
+              <Upload
+                style={{
+                  color: "#ede7f6",
+                }}
+              />
             </Button>
           </label>
         ) : (
-          <span>{`${userFirstName.charAt(0)}${userLastName.charAt(0)}`}</span>
+          <></>
         )}
-      </Avatar>
+        <Avatar
+          sx={{
+            width: "100%",
+            height: "100%",
+            border: "5px solid rgba(255, 255, 255)",
+            position: "absolute",
+            top: "0",
+            left: "0",
+            zIndex: 1,
+          }}
+          src={user_avatar}
+        >
+          {`${user_first_name.charAt(0)} ${user_last_name.charAt(0)}`}
+        </Avatar>
+      </Box>
       <Stack sx={{ pl: 1 }} spacing={2}>
         <Typography sx={{ display: "flex", alignItems: "center" }} variant="h5">
-          {`${userFirstName} ${userLastName}`} | <Flag />
+          {`${user_first_name} ${user_last_name}`} | <Flag />
         </Typography>
-        <Typography variant="subtitle1"> 20 | Computer science</Typography>
-        <Typography variant="body2">
-          Lorem ipsum dolor, sit amet consectetur adipisicing elit. Debitis,
-          aperiam fugiat laborum tenetur laboriosam a impedit ducimus fuga ipsa
-          esse. Deleniti, eius amet? Vitae est odit nostrum quam eius quibusdam.
+        <Typography variant="subtitle1">
+          {" "}
+          {calculateAge} | {user_major || "unknown"}
         </Typography>
+        <Typography variant="body2">{user_description ?? ""}</Typography>
       </Stack>
     </Box>
   );

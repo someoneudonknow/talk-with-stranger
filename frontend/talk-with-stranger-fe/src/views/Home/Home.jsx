@@ -21,7 +21,7 @@ import AccountBoxIcon from "@mui/icons-material/AccountBox";
 import { Avatar, Container, Menu, MenuItem, Tooltip } from "@mui/material";
 import { deepPurple } from "@mui/material/colors";
 import { Outlet, useNavigate } from "react-router-dom";
-import { Logout } from "@mui/icons-material";
+import { FenceTwoTone, Logout } from "@mui/icons-material";
 import { useDispatch, useSelector } from "react-redux";
 import { signOut } from "../../store/userSlice";
 
@@ -217,15 +217,20 @@ export default function Home() {
           </IconButton>
           <Avatar
             onClick={onAvatarClick}
-            sx={{ mr: 2, cursor: "pointer" }}
-          ></Avatar>
+            src={currentUser.user_avatar}
+            sx={{ mr: 2, cursor: "pointer", fontSize: "14px" }}
+          >
+            {`${currentUser?.user_first_name.charAt(
+              0
+            )} ${currentUser?.user_last_name.charAt(0)}`}
+          </Avatar>
           <AvatarMenu
             anchor={anchor}
             onAnchorClose={closeMenu}
             onLogoutClicked={handleLogoutClicked}
           />
           <Typography variant="h6" noWrap component="div">
-            UserName
+            {`${currentUser?.user_first_name} ${currentUser?.user_last_name}`}
           </Typography>
         </Toolbar>
       </AppBar>

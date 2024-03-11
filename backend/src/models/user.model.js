@@ -38,8 +38,8 @@ module.exports = (sequelize, { DataTypes }) => {
         type: DataTypes.STRING(100),
         allowNull: false,
       },
-      user_avatar: DataTypes.STRING(100),
-      user_background: DataTypes.STRING(100),
+      user_avatar: DataTypes.TEXT("tiny"),
+      user_background: DataTypes.TEXT("tiny"),
       user_description: DataTypes.TEXT("tiny"),
       user_major: DataTypes.STRING(20),
       user_role: {

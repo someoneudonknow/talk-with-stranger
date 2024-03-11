@@ -15,12 +15,29 @@ class AuthService extends BaseService {
     return await this.post("/users/signin", payload);
   }
 
-  async logOut() {
+  async logOut(uid, tokens) {
     return await this.post(
       "/users/signout",
       {},
       {
-        withAuth: true,
+        customHeaders: {
+          authorization: tokens.accessToken,
+          "x-client-id": uid,
+        },
+      }
+    );
+  }
+
+  async refreshToken(uid, tokens) {
+    return await this.post(
+      "/users/refreshToken",
+      {},
+      {
+        customHeaders: {
+          authorization: tokens.accessToken,
+          "x-client-id": uid,
+          refreshToken: tokens.refreshToken,
+        },
       }
     );
   }

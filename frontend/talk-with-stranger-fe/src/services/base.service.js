@@ -5,21 +5,18 @@ class BaseService {
     this.baseUrl = baseUrl;
   }
 
-  getHeaders({ withAuth = false, customHeaders = {} }) {
+  getHeaders({ customHeaders = {} }) {
     let headers = {
       "Content-Type": "application/json",
       ...customHeaders,
     };
-
-    if (withAuth) {
-      headers = {
-        ...headers,
-        Authorization: `${localStorage.getItem("accessToken") || ""}`,
-        "x-client-id": `${localStorage.getItem("uid") || ""}`,
-      };
-    }
-
     return headers;
+  }
+
+  getDataBody(data, options) {
+    let dataReturn = options?.useRawData ? data : JSON.stringify(data);
+
+    return dataReturn;
   }
 
   async handleReponseError(response) {
@@ -32,10 +29,10 @@ class BaseService {
     return data;
   }
 
-  async get(url, customHeaders = {}, options = {}) {
+  async get(url, options = {}) {
     return await this.handleReponseError(
       await fetch(`${this.baseUrl}${url}`, {
-        headers: this.getHeaders({ customHeaders, withAuth: options.withAuth }),
+        headers: this.getHeaders({ customHeaders: options?.customHeaders }),
       })
     );
   }
@@ -46,9 +43,8 @@ class BaseService {
         method: "POST",
         headers: this.getHeaders({
           customHeaders: options?.customHeaders,
-          withAuth: options.withAuth,
         }),
-        body: JSON.stringify(data),
+        body: this.getDataBody(data, options),
       })
     );
   }
@@ -59,10 +55,15 @@ class BaseService {
         method: "PATCH",
         headers: this.getHeaders({
           customHeaders: options?.customHeaders,
-          withAuth: options.withAuth,
         }),
-        body: JSON.stringify(data),
+        body: this.getDataBody(data, options),
       })
+    );
+  }
+
+  async normalFetch(url, options) {
+    return await this.handleReponseError(
+      await fetch(`${this.baseUrl}${url}`, options)
     );
   }
 
@@ -72,9 +73,8 @@ class BaseService {
         method: "DELETE",
         headers: this.getHeaders({
           customHeaders: options?.customHeaders,
-          withAuth: options.withAuth,
         }),
-        body: JSON.stringify(data),
+        body: this.getDataBody(data, options),
       })
     );
   }

@@ -23,7 +23,7 @@ const Error = ({
             <Typography variant="h1">{code}</Typography>
             <Typography variant="h6">{message}</Typography>
             <Button
-              onClick={() => navigate("/home/my-profile")}
+              onClick={() => navigate("/home/profile")}
               variant="contained"
               sx={{ mt: 2 }}
             >

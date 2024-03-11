@@ -43,15 +43,41 @@ const PreviewPictureModal = ({ onClose, onSave, open, src }) => {
     >
       <Slide in={open}>
         <Box sx={style}>
-          <Avatar
-            variant="rounded"
-            src={src}
+          <Box
+            component="div"
             sx={{
               width: "100%",
               height: "200px",
-              zIndex: "10",
+              backgroundImage: `url(${src})`,
+              backgroundRepeat: "no-repeat",
+              backgroundSize: "cover",
+              backgroundPosition: "center",
+              display: "grid",
+              placeItems: "center",
+              position: "relative",
             }}
-          />
+          >
+            <Avatar
+              src={src}
+              sx={{
+                width: "130px",
+                height: "130px",
+                zIndex: "10",
+                boxShadow: " -3px 1px 67px 5px rgba(239,230,230,0.72)",
+              }}
+            />
+            <Box
+              sx={{
+                position: "absolute",
+                top: "0",
+                left: "0",
+                width: "100%",
+                height: "100%",
+                backgroundColor: "rgba(0,0,0,0.5)",
+              }}
+            ></Box>
+          </Box>
+
           <Stack
             direction="row"
             justifyContent="space-between"

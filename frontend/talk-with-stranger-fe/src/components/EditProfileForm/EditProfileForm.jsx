@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import LoadingButton from "@mui/lab/LoadingButton";
 import {
   Box,
@@ -13,20 +13,58 @@ import {
 import { DatePicker } from "@mui/x-date-pickers";
 import { Controller, useForm } from "react-hook-form";
 import moment from "moment";
+import CountriesSelect from "../CountriesSelect/CountriesSelect";
+import { useAsyncError } from "react-router-dom";
+import DateOfBirthPicker from "../DateOfBirthPicker/DateOfBirthPicker";
+import RadioButtonGroup from "../RadioButtonGroup/RadioButtonGroup";
 
-const flags = [
-  { name: "Afghanistan", code: "AF" },
-  { name: "Åland Islands", code: "AX" },
-  { name: "Albania", code: "AL" },
-];
-
-const EditProfileForm = ({ onSubmit }) => {
+const EditProfileForm = ({ onSubmit, initialValue }) => {
+  const {
+    user_first_name,
+    user_last_name,
+    user_description,
+    user_dob,
+    user_avatar,
+    user_background,
+    user_major,
+    user_gender,
+  } = initialValue;
   const {
     control,
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm();
+  } = useForm({
+    defaultValues: {
+      editFirstName: user_first_name,
+      editLastName: user_last_name,
+      userDesc: user_description,
+      major: user_major,
+    },
+  });
+
+  const [countries, setCountries] = useState([]);
+  const [gender, setGender] = useState(user_gender || "male");
+  const [selectedCountry, setSelectedCountry] = useState();
+
+  useEffect(() => {
+    (async () => {
+      // replaced this api with our own api
+      const response = await fetch(
+        "https://countriesnow.space/api/v0.1/countries/iso"
+      );
+      const countriesRes = await response.json();
+      setCountries(countriesRes.data);
+    })();
+  }, []);
+
+  const handleGendersChanged = (e) => {
+    setGender(e.target.value);
+  };
+
+  const handleSelectionChange = (value, newValue) => {
+    setSelectedCountry(newValue);
+  };
 
   return (
     <Box
@@ -56,7 +94,6 @@ const EditProfileForm = ({ onSubmit }) => {
           <Grid item xs={6}>
             <TextField
               label="First Name"
-              size="small"
               fullWidth
               {...register("editFirstName", {
                 required: "This field can't be empty",
@@ -68,7 +105,6 @@ const EditProfileForm = ({ onSubmit }) => {
           <Grid item xs={6}>
             <TextField
               label="Last Name"
-              size="small"
               fullWidth
               {...register("editLastName", {
                 required: "This field can't be empty",
@@ -78,52 +114,62 @@ const EditProfileForm = ({ onSubmit }) => {
             />
           </Grid>
           <Grid item xs={12}>
-            <Controller
-              control={control}
-              name="userDob"
-              rules={{
-                validate: (value) =>
-                  value?.isBefore(moment()) || "Invalid date",
-              }}
-              render={({ field }) => {
-                return (
-                  <DatePicker
-                    label="Date Of Birth"
-                    value={field.value}
-                    inputRef={field.ref}
-                    onChange={(date) => {
-                      field.onChange(date);
-                    }}
-                    slotProps={{
-                      textField: {
-                        fullWidth: true,
-                        error: !!errors.userDob,
-                        helperText: errors?.userDob?.message,
-                      },
-                    }}
-                  />
-                );
-              }}
+            <RadioButtonGroup
+              id="edit-profile-genders"
+              name="genders"
+              formLabel="Genders"
+              defaultValue={user_gender}
+              value={gender}
+              onChange={handleGendersChanged}
+              data={[
+                {
+                  label: "Male",
+                  value: "male",
+                },
+                {
+                  label: "Female",
+                  value: "female",
+                },
+                {
+                  label: "Other",
+                  value: "other",
+                },
+              ]}
             />
+          </Grid>
+          <Grid item container spacing={2} xs={12}>
+            <Grid item xs={6}>
+              <TextField
+                {...register("major", {
+                  required: "Please let us known your major",
+                })}
+                fullWidth
+                label="Your Major"
+                error={!!errors?.major}
+                helperText={errors?.major?.message}
+              />
+            </Grid>
+            <Grid item xs={6}>
+              <DateOfBirthPicker
+                control={control}
+                defaultValue={user_dob}
+                slotProps={{
+                  textField: {
+                    fullWidth: true,
+                    error: !!errors.userDob,
+                    helperText: errors?.userDob?.message,
+                  },
+                }}
+              />
+            </Grid>
           </Grid>
           <Grid item xs={12}>
             <FormControl fullWidth>
-              <InputLabel id="edit-country">Country</InputLabel>
-              <Select labelId="edit-country" label="Country" fullWidth required>
-                {flags.map((country, i) => (
-                  <MenuItem key={i} value={country.code}>
-                    <img
-                      style={{
-                        height: "30px",
-                      }}
-                      src={`https://flagsapi.com/${country.code}/flat/64.png`}
-                    />
-                    <Box component="span" ml={1}>
-                      {country.name}
-                    </Box>
-                  </MenuItem>
-                ))}
-              </Select>
+              <CountriesSelect
+                countries={countries}
+                value={selectedCountry}
+                onSelectionChange={handleSelectionChange}
+              />
             </FormControl>
           </Grid>
           <Grid item xs={12}>
@@ -131,7 +177,6 @@ const EditProfileForm = ({ onSubmit }) => {
               label="Description"
               multiline
               rows={4}
-              defaultValue="Description"
               variant="filled"
               fullWidth
               {...register("userDesc")}

@@ -98,12 +98,21 @@ class AccessService {
         "user_major",
         "user_role",
         "user_dob",
+        "user_gender",
       ]),
       tokens: newTokenPair,
     };
   };
 
-  static signUp = async ({ email, password, firstName, lastName, gender }) => {
+  static signUp = async ({
+    email,
+    password,
+    firstName,
+    lastName,
+    gender,
+    dob,
+    major,
+  }) => {
     const foundUser = await db.User.findOne({
       where: {
         user_email: email,
@@ -123,6 +132,8 @@ class AccessService {
             user_first_name: firstName,
             user_last_name: lastName,
             user_gender: gender,
+            user_dob: dob,
+            user_major: major,
           },
           { transaction: t }
         );
@@ -172,6 +183,7 @@ class AccessService {
             "user_major",
             "user_role",
             "user_dob",
+            "user_gender",
           ]),
           tokens: tokenPair,
         };
@@ -261,6 +273,7 @@ class AccessService {
             "user_major",
             "user_role",
             "user_dob",
+            "user_gender",
           ]),
           tokens: tokenPair,
         };

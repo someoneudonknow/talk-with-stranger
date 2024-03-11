@@ -18,18 +18,21 @@ import { useEffect, useState } from "react";
 import { signUp } from "../../store/userSlice";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { toast, ToastContainer } from "react-toastify";
+import DateOfBirthPicker from "../../components/DateOfBirthPicker/DateOfBirthPicker";
+import RadioButtonGroup from "../../components/RadioButtonGroup/RadioButtonGroup";
 
 const SignUpView = () => {
   const {
     register,
     handleSubmit,
     watch,
+    control,
     formState: { errors },
   } = useForm();
   const [showPassword, setShowPassword] = useState(false);
   const [showPasswordConfirm, setShowPasswordConfirm] = useState(false);
   const { isLoading, currentUser } = useSelector((state) => state.user);
+  const [gender, setGender] = useState("male");
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const enteredPassword = watch("password");
@@ -49,12 +52,19 @@ const SignUpView = () => {
     navigate("/auth/signin");
   };
 
+  const handleGenderChanged = (e) => {
+    setGender(e.target.value);
+  };
+
   const onSubmit = async (data) => {
     const payload = {
       firstName: data.firstName,
       lastName: data.lastName,
       email: data.email,
       password: data.password,
+      gender: gender,
+      major: data.major,
+      dob: data.userDob.toDate(),
     };
 
     dispatch(signUp(payload));
@@ -124,32 +134,56 @@ const SignUpView = () => {
               />
             </Grid>
             <Grid item xs={12}>
-              <FormControl>
-                <FormLabel id="genders">Gender</FormLabel>
-                <RadioGroup
-                  row
-                  aria-labelledby="genders"
-                  name="genders-radio-buttons-group"
-                  defaultValue="male"
-                >
-                  <FormControlLabel
-                    autoFocus
-                    value="male"
-                    control={<Radio />}
-                    label="Male"
-                  />
-                  <FormControlLabel
-                    value="female"
-                    control={<Radio />}
-                    label="Female"
-                  />
-                  <FormControlLabel
-                    value="other"
-                    control={<Radio />}
-                    label="Other"
-                  />
-                </RadioGroup>
-              </FormControl>
+              <RadioButtonGroup
+                id="edit-profile-genders"
+                name="genders"
+                formLabel="Genders"
+                defaultValue="male"
+                value={gender}
+                onChange={handleGenderChanged}
+                data={[
+                  {
+                    label: "Male",
+                    value: "male",
+                  },
+                  {
+                    label: "Female",
+                    value: "female",
+                  },
+                  {
+                    label: "Other",
+                    value: "other",
+                  },
+                ]}
+              />
+            </Grid>
+            <Grid container item spacing={1} xs={12}>
+              <Grid item xs={6}>
+                <TextField
+                  {...register("major", {
+                    required: "Please let us known your major",
+                  })}
+                  fullWidth
+                  label="Your Major"
+                  error={!!errors?.major}
+                  helperText={errors?.major?.message}
+                />
+              </Grid>
+              <Grid item xs={6}>
+                <DateOfBirthPicker
+                  control={control}
+                  customRules={{
+                    required: "Please select your birth date",
+                  }}
+                  slotProps={{
+                    textField: {
+                      fullWidth: false,
+                      error: !!errors.userDob,
+                      helperText: errors?.userDob?.message,
+                    },
+                  }}
+                />
+              </Grid>
             </Grid>
             <Grid item xs={12}>
               <TextField
