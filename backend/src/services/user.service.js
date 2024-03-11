@@ -2,8 +2,10 @@
 
 const { BadRequestError, NotFoundError } = require("../core/error.response");
 const db = require("../db/init.mysql");
+const { deepCleanObj, removeKeys } = require("../utils");
 const UploadService = require("./upload.service");
 const path = require("path");
+const CountryService = require("./country.service");
 
 class UserService {
   //param of async is accessToken (I don't know it is an id of token or accessToken)
@@ -16,6 +18,15 @@ class UserService {
       },
     });
     if (!foundUser) throw new NotFoundError("User not found");
+
+    if (foundUser.user_country) {
+      const foundCountry = await CountryService.getCountry(
+        foundUser.user_country
+      );
+
+      foundUser.user_country = foundCountry;
+    }
+
     return foundUser;
   };
 
@@ -65,6 +76,33 @@ class UserService {
     foundUser.save();
 
     return url;
+  };
+
+  static updateMe = async ({ userId, dataBody }) => {
+    const foundUser = await db.User.findOne({
+      where: {
+        id: userId,
+      },
+    });
+    if (!foundUser) throw new NotFoundError("User not found");
+
+    const cleanObj = deepCleanObj(
+      removeKeys(dataBody, [
+        "id",
+        "user_email",
+        "user_password",
+        "user_avatar",
+        "user_background",
+        "user_role",
+      ])
+    );
+
+    for (var key in cleanObj) {
+      foundUser[key] = cleanObj[key];
+    }
+
+    const updatedUser = await foundUser.save();
+    return updatedUser;
   };
 }
 
