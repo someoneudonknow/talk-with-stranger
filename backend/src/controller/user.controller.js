@@ -5,11 +5,10 @@ const { SuccessResponse } = require("../core/success.response");
 const UserService = require("../services/user.service");
 
 class UserController {
-  static getuserinfo = async (req, res, next) => {
-    const userID = req.params.id;
+  static getUserInfo = async (req, res, next) => {
     new SuccessResponse({
       message: "Get user info success",
-      metadata: await UserService.getUserInfo(userID),
+      metadata: await UserService.getUserInfo(req.user.userId),
     }).send(res);
   };
 
@@ -26,6 +25,16 @@ class UserController {
       metadata: await UserService.updateBackground({
         userId: req.user.userId,
         file: req.file,
+      }),
+    }).send(res);
+  };
+
+  static updateMe = async (req, res, next) => {
+    new SuccessResponse({
+      message: "User update success",
+      metadata: await UserService.updateMe({
+        userId: req.user.userId,
+        dataBody: req.body,
       }),
     }).send(res);
   };

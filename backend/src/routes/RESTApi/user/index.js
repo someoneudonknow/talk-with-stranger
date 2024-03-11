@@ -9,7 +9,7 @@ const UserController = require("../../../controller/user.controller");
 const { uploadMemory } = require("../../../services/multer.service");
 
 router.use(authentication);
-router.get("/users/:id", asyncHandler(UserController.getuserinfo));
+router.get("/users/me", asyncHandler(UserController.getUserInfo));
 router.patch(
   "/users/avatar",
   uploadMemory.single("avatar"),
@@ -20,5 +20,6 @@ router.patch(
   uploadMemory.single("background"),
   asyncHandler(UserController.updateUserBackground)
 );
+router.patch("/users", asyncHandler(UserController.updateMe));
 
 module.exports = router;
