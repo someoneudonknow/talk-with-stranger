@@ -28,15 +28,14 @@ class AuthService extends BaseService {
     );
   }
 
-  async refreshToken(uid, tokens) {
+  async refreshToken(uid, refreshToken) {
     return await this.post(
       "/users/refreshToken",
       {},
       {
         customHeaders: {
-          authorization: tokens.accessToken,
           "x-client-id": uid,
-          refreshToken: tokens.refreshToken,
+          "refresh-token": refreshToken,
         },
       }
     );

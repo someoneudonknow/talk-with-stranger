@@ -30,8 +30,11 @@ class CountryService {
     //Check exists
     const foundCountry = await db.Country.findOne({
       where: {
-        country_code: countryCode,
-        country_iso_code: countryIsoCode,
+        $or: [
+          { country_code: countryCode },
+          { country_iso_code: countryIsoCode },
+          { country_name: countryName },
+        ],
       },
     });
     if (foundCountry) throw new BadRequestError("Country is exists");

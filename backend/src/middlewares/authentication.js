@@ -12,9 +12,6 @@ const headers = {
 };
 
 const authentication = asyncHandler(async (req, res, next) => {
-  const accessToken = req.headers[headers.AUTHORIZATION];
-  if (!accessToken) throw new BadRequestError("Access token not provided");
-
   const clientId = req.headers[headers.CLIENT_ID];
   if (!clientId) throw new BadRequestError("Client ID not provided");
 
@@ -44,6 +41,8 @@ const authentication = asyncHandler(async (req, res, next) => {
 
     return next();
   }
+  const accessToken = req.headers[headers.AUTHORIZATION];
+  if (!accessToken) throw new BadRequestError("Access token not provided");
 
   const decodedAccessToken = jwt.verify(accessToken, keyTokenStored.public_key);
   if (decodedAccessToken.userId !== clientId)

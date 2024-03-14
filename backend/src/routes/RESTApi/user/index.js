@@ -8,7 +8,7 @@ const authentication = require("../../../middlewares/authentication");
 const UserController = require("../../../controller/user.controller");
 const { uploadMemory } = require("../../../services/multer.service");
 
-router.use(authentication);
+router.use("/users", authentication);
 router.get("/users/me", asyncHandler(UserController.getUserInfo));
 router.patch(
   "/users/avatar",
@@ -20,6 +20,6 @@ router.patch(
   uploadMemory.single("background"),
   asyncHandler(UserController.updateUserBackground)
 );
-router.patch("/users", asyncHandler(UserController.updateMe));
+router.patch("/users/me", asyncHandler(UserController.updateMe));
 
 module.exports = router;

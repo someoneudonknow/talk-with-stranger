@@ -1,4 +1,5 @@
 import ChatBar from "./ChatBar/ChatBar";
 import ChatMessageItem from "./ChatMessageItem/ChatMessageItem";
+import ChatInput from "./ChatInput/ChatInput";
 
-export { ChatBar, ChatMessageItem };
+export { ChatInput, ChatBar, ChatMessageItem };

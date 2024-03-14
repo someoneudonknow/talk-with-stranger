@@ -12,6 +12,7 @@ import PreviewAvatarModal from "../../components/PreviewAvatarModal/PreviewAvata
 import { useDispatch, useSelector } from "react-redux";
 import { updateAvatar, updateBackground } from "../../store/userSlice";
 import PreviewPictureModal from "../../components/PreviewPictureModal/PreviewPictureModal";
+import { updateUser } from "../../store/userSlice";
 
 const ProfileView = () => {
   const [avatarSrc, setAvatarSrc] = useState(null);
@@ -20,15 +21,17 @@ const ProfileView = () => {
   const [backgroundSrc, setBackgroundSrc] = useState(null);
   const { currentUser, isLoading } = useSelector((state) => state.user);
   const dispatch = useDispatch();
-
+  console.log({ backgroundSrc });
   const handleAvatarUploadChange = (e) => {
+    console.log("check");
     if (e.target.files && e.target.files[0]) {
       setAvatarSrc(e.target.files[0]);
-      setModalOpen(true);
     }
+    setModalOpen(true);
   };
 
   const handleBackgroundChange = (e) => {
+    console.log("background change");
     if (e.target.files && e.target.files[0]) {
       setBackgroundSrc(e.target.files[0]);
       setBackgroundModalOpen(true);
@@ -36,8 +39,7 @@ const ProfileView = () => {
   };
 
   const onEditFormSubmit = (data) => {
-    // update user info here
-    console.log(data);
+    dispatch(updateUser(data));
   };
 
   const handleBackgroundSave = () => {
@@ -65,13 +67,19 @@ const ProfileView = () => {
         <CircularProgress color="inherit" />
       </Backdrop>
       <PreviewAvatarModal
-        onClose={() => setModalOpen(false)}
+        onClose={() => {
+          setAvatarSrc(null);
+          setModalOpen(false);
+        }}
         open={modalOpen}
         onSave={handleAvatarSave}
         src={avatarSrc ? URL.createObjectURL(avatarSrc) : ""}
       />
       <PreviewPictureModal
-        onClose={() => setBackgroundModalOpen(false)}
+        onClose={() => {
+          setBackgroundSrc(null);
+          setBackgroundModalOpen(false);
+        }}
         open={backgroundModalOpen}
         onSave={handleBackgroundSave}
         src={backgroundSrc ? URL.createObjectURL(backgroundSrc) : ""}

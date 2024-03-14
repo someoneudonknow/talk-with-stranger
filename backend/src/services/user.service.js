@@ -19,14 +19,6 @@ class UserService {
     });
     if (!foundUser) throw new NotFoundError("User not found");
 
-    if (foundUser.user_country) {
-      const foundCountry = await CountryService.getCountry(
-        foundUser.user_country
-      );
-
-      foundUser.user_country = foundCountry;
-    }
-
     return foundUser;
   };
 
@@ -102,6 +94,7 @@ class UserService {
     }
 
     const updatedUser = await foundUser.save();
+
     return updatedUser;
   };
 }

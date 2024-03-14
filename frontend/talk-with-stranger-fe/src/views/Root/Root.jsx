@@ -1,15 +1,18 @@
 import { useEffect } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { Outlet } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import AuthService from "../../services/auth.service";
-import { isJWTExpired } from "../../utils";
+import Cookie from "js-cookie";
+import { resetToast } from "../../store/toastSlice";
+import { refreshToken } from "../../store/userSlice";
 
 const authService = new AuthService();
 
 const RootView = () => {
   const { currentUser, userToken } = useSelector((state) => state.user);
   const { type, message } = useSelector((state) => state.toast);
+  const dispatch = useDispatch();
 
   useEffect(() => {
     switch (type) {
@@ -25,7 +28,16 @@ const RootView = () => {
       default:
         break;
     }
+    dispatch(resetToast());
   }, [type, message]);
+
+  useEffect(() => {
+    const refreshTokenStore = Cookie.get("refreshToken");
+    const uid = Cookie.get("uid");
+    if (refreshTokenStore && uid) {
+      dispatch(refreshToken({ refreshToken: refreshTokenStore, uid }));
+    }
+  }, []);
 
   return (
     <main

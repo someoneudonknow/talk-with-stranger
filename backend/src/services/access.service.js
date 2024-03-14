@@ -46,7 +46,7 @@ class AccessService {
       },
     });
 
-    if (!foundUser) throw new BadRequestError("Your not registered");
+    if (!foundUser) throw new BadRequestError("You are not registered");
 
     const newTokenPair = await createTokensPair(
       {
@@ -99,6 +99,7 @@ class AccessService {
         "user_role",
         "user_dob",
         "user_gender",
+        "user_country",
       ]),
       tokens: newTokenPair,
     };
@@ -184,6 +185,7 @@ class AccessService {
             "user_role",
             "user_dob",
             "user_gender",
+            "user_country",
           ]),
           tokens: tokenPair,
         };
@@ -274,6 +276,7 @@ class AccessService {
             "user_role",
             "user_dob",
             "user_gender",
+            "user_country",
           ]),
           tokens: tokenPair,
         };

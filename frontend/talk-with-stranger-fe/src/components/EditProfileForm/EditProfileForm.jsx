@@ -1,20 +1,9 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import LoadingButton from "@mui/lab/LoadingButton";
-import {
-  Box,
-  FormControl,
-  Grid,
-  InputLabel,
-  MenuItem,
-  Select,
-  TextField,
-  Typography,
-} from "@mui/material";
-import { DatePicker } from "@mui/x-date-pickers";
-import { Controller, useForm } from "react-hook-form";
-import moment from "moment";
+import { Box, FormControl, Grid, TextField, Typography } from "@mui/material";
+import { useForm } from "react-hook-form";
+import CountryService from "../../services/country.service";
 import CountriesSelect from "../CountriesSelect/CountriesSelect";
-import { useAsyncError } from "react-router-dom";
 import DateOfBirthPicker from "../DateOfBirthPicker/DateOfBirthPicker";
 import RadioButtonGroup from "../RadioButtonGroup/RadioButtonGroup";
 
@@ -24,11 +13,11 @@ const EditProfileForm = ({ onSubmit, initialValue }) => {
     user_last_name,
     user_description,
     user_dob,
-    user_avatar,
-    user_background,
     user_major,
     user_gender,
+    user_country,
   } = initialValue;
+
   const {
     control,
     register,
@@ -45,18 +34,33 @@ const EditProfileForm = ({ onSubmit, initialValue }) => {
 
   const [countries, setCountries] = useState([]);
   const [gender, setGender] = useState(user_gender || "male");
-  const [selectedCountry, setSelectedCountry] = useState();
+  const [loading, setLoading] = useState(false);
+  const [selectedCountry, setSelectedCountry] = useState(user_country);
 
   useEffect(() => {
     (async () => {
-      // replaced this api with our own api
-      const response = await fetch(
-        "https://countriesnow.space/api/v0.1/countries/iso"
+      setLoading(true);
+      const countryService = new CountryService(
+        `${import.meta.env.VITE_BASE_URL}/api/v1`
       );
-      const countriesRes = await response.json();
-      setCountries(countriesRes.data);
+      const response = await countryService.getAllCountries();
+      setCountries(response.metadata);
+      setLoading(false);
     })();
   }, []);
+
+  const handleFormSubmit = (data) => {
+    const user = {
+      user_first_name: data?.editFirstName,
+      user_last_name: data?.editLastName,
+      user_major: data?.major,
+      user_dob: data?.userDob.toDate(),
+      user_country: selectedCountry.id,
+      user_gender: gender,
+      user_description: data.userDesc,
+    };
+    onSubmit(user);
+  };
 
   const handleGendersChanged = (e) => {
     setGender(e.target.value);
@@ -80,7 +84,7 @@ const EditProfileForm = ({ onSubmit, initialValue }) => {
       }}
     >
       <Box
-        onSubmit={handleSubmit(onSubmit)}
+        onSubmit={handleSubmit(handleFormSubmit)}
         component="form"
         noValidate
         sx={{ mt: 3 }}
@@ -166,6 +170,7 @@ const EditProfileForm = ({ onSubmit, initialValue }) => {
           <Grid item xs={12}>
             <FormControl fullWidth>
               <CountriesSelect
+                loading={loading}
                 countries={countries}
                 value={selectedCountry}
                 onSelectionChange={handleSelectionChange}

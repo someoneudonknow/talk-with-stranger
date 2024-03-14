@@ -1,5 +1,5 @@
-import { useMemo, useState } from "react";
-import { Edit, Flag, Upload } from "@mui/icons-material";
+import { useMemo, useRef, useState } from "react";
+import { Edit, Flag, FlagCircle, Upload } from "@mui/icons-material";
 import { Avatar, Box, Button, Stack, Typography } from "@mui/material";
 import moment from "moment";
 
@@ -12,9 +12,12 @@ const UserProfileCard = ({ user, onAvatarSelect, onBackgroundSelect }) => {
     user_avatar,
     user_background,
     user_major,
+    user_country,
   } = user;
   const [hover, setHover] = useState(false);
-
+  const avatarRef = useRef();
+  const backgroundRef = useRef();
+  console.log({ user_country });
   const calculateAge = useMemo(() => {
     if (!user_dob) return "unknown";
 
@@ -48,9 +51,7 @@ const UserProfileCard = ({ user, onAvatarSelect, onBackgroundSelect }) => {
           position: "relative",
           height: "130px",
           width: "100%",
-          backgroundColor:
-            "linear-gradient(43deg, #4158D0 0%, #C850C0 46%, #FFCC70 100%), ",
-          backgroundImage: `url(${user_background})`,
+          background: ` url(${user_background}), linear-gradient(43deg, #4158D0 0%, #C850C0 46%, #FFCC70 100%)`,
           backgroundPosition: "center",
           backgroundRepeat: "no-repeat",
           backgroundSize: "cover",
@@ -61,6 +62,10 @@ const UserProfileCard = ({ user, onAvatarSelect, onBackgroundSelect }) => {
           id="background-upload"
           type="file"
           onChange={onBackgroundSelect}
+          ref={backgroundRef}
+          onClick={() => {
+            backgroundRef.current.value = null;
+          }}
           hidden
         />
         <Button
@@ -95,8 +100,12 @@ const UserProfileCard = ({ user, onAvatarSelect, onBackgroundSelect }) => {
         <input
           accept="image/*"
           id="avatar-upload"
+          ref={avatarRef}
           type="file"
           onChange={onAvatarSelect}
+          onClick={() => {
+            avatarRef.current.value = null;
+          }}
           hidden
         />
         {hover ? (
@@ -147,9 +156,29 @@ const UserProfileCard = ({ user, onAvatarSelect, onBackgroundSelect }) => {
         </Avatar>
       </Box>
       <Stack sx={{ pl: 1 }} spacing={2}>
-        <Typography sx={{ display: "flex", alignItems: "center" }} variant="h5">
-          {`${user_first_name} ${user_last_name}`} | <Flag />
-        </Typography>
+        <Box sx={{ maxHeight: "50px", display: "flex", alignItems: "center" }}>
+          <Typography
+            sx={{ display: "flex", alignItems: "center" }}
+            variant="h5"
+          >
+            {`${user_first_name} ${user_last_name}`} |
+          </Typography>
+          <Box
+            sx={{ width: "40px", ml: 1, display: "grid", placeItems: "center" }}
+            component="span"
+          >
+            {user_country?.country_iso_code ? (
+              <img
+                loading="lazy"
+                style={{ height: "100%", width: "100%" }}
+                srcSet={`https://flagcdn.com/w40/${user_country?.country_iso_code.toLowerCase()}.png 2x`}
+                src={`https://flagcdn.com/w20/${user_country?.country_iso_code.toLowerCase()}.png`}
+              />
+            ) : (
+              <Flag sx={{ marginLeft: "-30px" }} />
+            )}
+          </Box>
+        </Box>
         <Typography variant="subtitle1">
           {" "}
           {calculateAge} | {user_major || "unknown"}

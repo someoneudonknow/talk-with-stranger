@@ -10,7 +10,7 @@ const asyncHandler = require("../../../helpers/asyncHandler");
 router.post("/users/signup", asyncHandler(AccessController.signup));
 router.post("/users/signin", asyncHandler(AccessController.signin));
 
-router.use(authentication);
+router.use("/users", authentication);
 
 router.post("/users/signout", asyncHandler(AccessController.signOut));
 router.post(

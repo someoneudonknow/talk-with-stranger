@@ -9,7 +9,7 @@ const router = express.Router();
 router.get("/countries", asyncHandler(CountryController.getAllCountries));
 router.get("/countries/:id", asyncHandler(CountryController.getCountry));
 
-router.use(authentication);
+router.use("/countries", authentication);
 
 router.post("/countries", asyncHandler(CountryController.addNewCountry));
 router.delete(

@@ -36,6 +36,15 @@ class UserService extends BaseService {
       body: data,
     });
   };
+
+  updateMe = async (bodyUpdate, uid, tokens) => {
+    return await this.patch("/users/me", bodyUpdate, {
+      customHeaders: {
+        authorization: tokens.accessToken,
+        "x-client-id": uid,
+      },
+    });
+  };
 }
 
 export default UserService;

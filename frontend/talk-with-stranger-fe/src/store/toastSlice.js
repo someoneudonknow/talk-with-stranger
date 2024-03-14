@@ -19,10 +19,18 @@ const toastSlice = createSlice({
       state.type = "warning";
       state.message = payload;
     },
+    resetToast: (state) => {
+      state.type = "";
+      state.message = "";
+    },
   },
 });
 
-export const { showErrorToast, showSuccessToast, showWarningToast } =
-  toastSlice.actions;
+export const {
+  resetToast,
+  showErrorToast,
+  showSuccessToast,
+  showWarningToast,
+} = toastSlice.actions;
 
 export default toastSlice.reducer;

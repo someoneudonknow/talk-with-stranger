@@ -55,7 +55,7 @@ const SettingBarFullControl = ({
         sx={{ marginLeft: "auto" }}
         variant="contained"
       >
-        Skip
+        Find Next
       </Button>
     </Stack>
   );

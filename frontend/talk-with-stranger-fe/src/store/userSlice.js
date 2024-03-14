@@ -2,6 +2,8 @@ import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import AuthService from "../services/auth.service";
 import { showErrorToast, showSuccessToast } from "./toastSlice";
 import UserService from "../services/user.service";
+import { setUserCookies, clearUserCookies } from "../utils";
+import Cookie from "js-cookie";
 
 const authService = new AuthService(`${import.meta.env.VITE_BASE_URL}/api/v1`);
 const userService = new UserService(`${import.meta.env.VITE_BASE_URL}/api/v1`);
@@ -90,8 +92,43 @@ export const updateBackground = createAsyncThunk(
   }
 );
 
+export const updateUser = createAsyncThunk(
+  "users/update",
+  async (payload, { rejectWithValue, dispatch, getState }) => {
+    try {
+      const tokens = getState().user.userToken;
+      const uid = getState().user.currentUser.id;
+
+      const response = await userService.updateMe(payload, uid, tokens);
+      dispatch(showSuccessToast("Successfully updated your information"));
+      return response;
+    } catch (err) {
+      dispatch(showErrorToast(err.message));
+
+      return rejectWithValue(err);
+    }
+  }
+);
+
+export const refreshToken = createAsyncThunk(
+  "users/refreshToken",
+  async (payload, { rejectWithValue, dispatch }) => {
+    try {
+      const refreshToken = payload.refreshToken;
+      const uid = payload.uid;
+      const refreshedData = await authService.refreshToken(uid, refreshToken);
+
+      return refreshedData;
+    } catch (err) {
+      dispatch(showErrorToast(err.message));
+
+      return rejectWithValue(err);
+    }
+  }
+);
+
 const initState = {
-  userToken: JSON.parse(localStorage.getItem("tokens")) || null,
+  userToken: null,
   currentUser: null,
   isLoading: false,
 };
@@ -115,16 +152,16 @@ const userSlice = createSlice({
         return { ...state, isLoading: true };
       })
       .addCase(signUp.fulfilled, (state, { payload }) => {
-        localStorage.setItem(
-          "tokens",
-          JSON.stringify(payload?.metadata?.tokens)
-        );
+        const tokens = payload?.metadata?.tokens;
+        const user = payload?.metadata?.user;
+
+        setUserCookies({ uid: user.id, refreshToken: tokens?.refreshToken });
 
         return {
           ...state,
           isLoading: false,
-          currentUser: payload?.metadata?.user,
-          userToken: payload?.metadata?.tokens,
+          currentUser: user,
+          userToken: tokens,
         };
       })
       .addCase(signUp.rejected, (state, action) => {
@@ -145,7 +182,9 @@ const userSlice = createSlice({
           metadata: { user, tokens },
         } = payload.user;
 
-        localStorage.setItem("tokens", JSON.stringify(tokens));
+        if (payload?.rememberMe) {
+          setUserCookies({ uid: user.id, refreshToken: tokens?.refreshToken });
+        }
 
         return {
           ...state,
@@ -167,8 +206,7 @@ const userSlice = createSlice({
         return { ...state, isLoading: true };
       })
       .addCase(signOut.fulfilled, (state, { payload }) => {
-        localStorage.removeItem("tokens");
-
+        clearUserCookies();
         return {
           ...state,
           isLoading: false,
@@ -222,6 +260,48 @@ const userSlice = createSlice({
         };
       })
       .addCase(updateBackground.rejected, (state, { payload }) => {
+        return {
+          ...state,
+          isLoading: false,
+        };
+      });
+
+    builder
+      .addCase(updateUser.pending, (state, { payload }) => {
+        return { ...state, isLoading: true };
+      })
+      .addCase(updateUser.fulfilled, (state, { payload }) => {
+        return {
+          ...state,
+          isLoading: false,
+          currentUser: payload?.metadata,
+        };
+      })
+      .addCase(updateUser.rejected, (state, { payload }) => {
+        return {
+          ...state,
+          isLoading: false,
+        };
+      });
+
+    builder
+      .addCase(refreshToken.pending, (state, { payload }) => {
+        return { ...state, isLoading: true };
+      })
+      .addCase(refreshToken.fulfilled, (state, { payload }) => {
+        const tokens = payload?.metadata?.tokens;
+        const user = payload?.metadata?.user;
+
+        setUserCookies({ uid: user.id, refreshToken: tokens?.refreshToken });
+
+        return {
+          ...state,
+          isLoading: false,
+          currentUser: user,
+          userToken: tokens,
+        };
+      })
+      .addCase(refreshToken.rejected, (state, { payload }) => {
         return {
           ...state,
           isLoading: false,

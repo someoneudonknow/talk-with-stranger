@@ -1,5 +1,8 @@
 "use strict";
 
+const db = require("../db/init.mysql");
+const { removeKeys } = require("../utils");
+
 const TABLE_NAME = "user";
 
 module.exports = (sequelize, { DataTypes }) => {
@@ -62,6 +65,34 @@ module.exports = (sequelize, { DataTypes }) => {
     },
     {
       tableName: TABLE_NAME,
+      hooks: {
+        afterFind: async function (model) {
+          if (model?.user_country) {
+            const country = await db.Country.findOne({
+              where: {
+                id: model.user_country,
+              },
+            });
+            model.user_country = removeKeys(country.toJSON(), [
+              "createdAt",
+              "updatedAt",
+            ]);
+          }
+        },
+        afterSave: async function (model) {
+          if (model?.user_country) {
+            const country = await db.Country.findOne({
+              where: {
+                id: model.user_country,
+              },
+            });
+            model.user_country = removeKeys(country.toJSON(), [
+              "createdAt",
+              "updatedAt",
+            ]);
+          }
+        },
+      },
     }
   );
 
