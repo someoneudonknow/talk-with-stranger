@@ -1,26 +1,16 @@
 "use strict";
-const db = require("../db/init.mysql");
 
-const TABLE_NAME = "message";
+const TABLE_NAME = "call";
 
 module.exports = (sequelize, { DataTypes }) => {
-  const Message = sequelize.define(
-    "Message",
+  const call = sequelize.define(
+    "Call",
     {
       id: {
         type: DataTypes.UUID,
         defaultValue: DataTypes.UUIDV4,
         primaryKey: true,
         allowNull: false,
-      },
-      sender: {
-        type: DataTypes.UUID,
-        allowNull: false,
-        references: {
-          model: "user",
-          key: "id",
-        },
-        onDelete: "CASCADE",
       },
       conservation: {
         type: DataTypes.UUID,
@@ -31,15 +21,12 @@ module.exports = (sequelize, { DataTypes }) => {
         },
         onDelete: "CASCADE",
       },
-      type: {
-        type: DataTypes.ENUM("text", "images", "files", "audio", "video"),
-        default: "text",
+      startedAt: {
+        type: DataTypes.DATE,
+        default: Date.now(),
       },
-      text: {
-        type: DataTypes.STRING(256),
-      },
-      attachment: {
-        type: DataTypes.TEXT("tiny"),
+      endedAt: {
+        type: DataTypes.DATE,
       },
     },
     {
@@ -55,7 +42,7 @@ module.exports = (sequelize, { DataTypes }) => {
             },
           });
 
-          await foundConservation.increment("message_count");
+          await foundConservation.increment("call_count");
         },
         afterDestroy: async function (record) {
           const conservation = record.conservation;
@@ -67,11 +54,11 @@ module.exports = (sequelize, { DataTypes }) => {
             },
           });
 
-          await foundConservation.decrement("message_count");
+          await foundConservation.decrement("call_count");
         },
       },
     }
   );
 
-  return Message;
+  return call;
 };

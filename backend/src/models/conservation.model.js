@@ -23,6 +23,14 @@ module.exports = (sequelize, { DataTypes }) => {
         type: DataTypes.ENUM("group", "one_to_one"),
         default: "one_to_one",
       },
+      message_count: {
+        type: DataTypes.INTEGER.UNSIGNED,
+        default: 0,
+      },
+      call_count: {
+        type: DataTypes.INTEGER.UNSIGNED,
+        default: 0,
+      },
     },
     {
       tableName: TABLE_NAME,
