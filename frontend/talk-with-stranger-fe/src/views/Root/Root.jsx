@@ -6,11 +6,9 @@ import AuthService from "../../services/auth.service";
 import Cookie from "js-cookie";
 import { resetToast } from "../../store/toastSlice";
 import { refreshToken } from "../../store/userSlice";
-
-const authService = new AuthService();
+import socket from "../../socket";
 
 const RootView = () => {
-  const { currentUser, userToken } = useSelector((state) => state.user);
   const { type, message } = useSelector((state) => state.toast);
   const dispatch = useDispatch();
 

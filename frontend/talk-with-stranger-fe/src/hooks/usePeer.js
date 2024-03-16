@@ -5,7 +5,6 @@ import { Peer } from "peerjs";
 
 const usePeer = (onCall) => {
   const [peerInstance, setPeerInstance] = useState();
-  const callRef = useRef();
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {

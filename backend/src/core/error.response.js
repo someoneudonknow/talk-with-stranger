@@ -63,7 +63,17 @@ class InternalServerError extends ErrorResponse {
   }
 }
 
+class InsufficientStorageError extends ErrorResponse {
+  constructor(
+    message = ReasonPhrases.INSUFFICIENT_STORAGE,
+    statusCode = StatusCodes.INSUFFICIENT_STORAGE
+  ) {
+    super(message, statusCode);
+  }
+}
+
 module.exports = {
+  InsufficientStorageError,
   ConflictError,
   NotFoundError,
   BadRequestError,

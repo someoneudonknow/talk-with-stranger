@@ -18,6 +18,7 @@ module.exports = (sequelize, { DataTypes }) => {
           model: "user",
           key: "id",
         },
+        allowNull: false,
       },
       type: {
         type: DataTypes.ENUM("group", "one_to_one"),

@@ -1,7 +1,13 @@
 "use-strict";
 
-const demoRouter = require("./demo/index.js");
+const connectionRouter = require("./connection/index.js");
+const conservationRouter = require("./conservation");
 
 module.exports = (socket) => {
-  demoRouter(socket);
+  connectionRouter(socket);
+  conservationRouter(socket);
+
+  socket.on("message", (message) => {
+    console.log(message);
+  });
 };
