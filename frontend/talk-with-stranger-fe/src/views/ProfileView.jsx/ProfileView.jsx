@@ -21,7 +21,7 @@ const ProfileView = () => {
   const [backgroundSrc, setBackgroundSrc] = useState(null);
   const { currentUser, isLoading } = useSelector((state) => state.user);
   const dispatch = useDispatch();
-
+  console.log(currentUser);
   const handleAvatarUploadChange = (e) => {
     if (e.target.files && e.target.files[0]) {
       setAvatarSrc(e.target.files[0]);

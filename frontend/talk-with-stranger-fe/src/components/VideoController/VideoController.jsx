@@ -8,9 +8,11 @@ import {
   Menu,
   MenuItem,
   Slide,
+  Stack,
+  Typography,
 } from "@mui/material";
-import { useEffect, useState, forwardRef } from "react";
-import { SettingBarFullControl, SettingBarVolumeControl } from "./SettingBar";
+import { useState, forwardRef } from "react";
+import { SettingBarFullControl } from "./SettingBar";
 
 const VideoController = (
   {
@@ -22,11 +24,12 @@ const VideoController = (
     onVolumeChange,
     volume,
     loading,
+    screenLoading,
+    userInfo,
   },
   ref
 ) => {
   const [hover, setHover] = useState(false);
-
   return (
     <Box
       component="div"
@@ -40,7 +43,36 @@ const VideoController = (
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
     >
-      {loading && (
+      {userInfo && !loading && (
+        <Stack
+          sx={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            padding: "10",
+            width: "100%",
+            height: "50px",
+            zIndex: 100,
+            bgcolor: "rgba(105,105,105,0.7)",
+            alignItems: "center",
+            paddingX: "10px",
+          }}
+          direction="row"
+          spacing={2}
+        >
+          <Avatar src={userInfo?.userAvatarUrl} />
+          <Typography sx={{ color: "white" }}>{userInfo?.userName}</Typography>
+          {userInfo?.userCountry?.country_iso_code && (
+            <img
+              width="40px"
+              srcSet={`https://flagcdn.com/w40/${userInfo?.userCountry?.country_iso_code.toLowerCase()}.png 2x`}
+              src={`https://flagcdn.com/w40/${userInfo?.userCountry?.country_iso_code.toLowerCase()}.png`}
+            />
+          )}
+        </Stack>
+      )}
+
+      {screenLoading && (
         <Box
           sx={{
             height: "100%",
@@ -85,6 +117,7 @@ const VideoController = (
           onCameraBtnClicked={onCameraBtnClick}
           cameraOff={!options.video}
           onSkipBtnClicked={onSkipBtnClick}
+          loading={loading}
         />
       )}
     </Box>

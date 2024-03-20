@@ -4,6 +4,7 @@ import { showErrorToast, showSuccessToast } from "./toastSlice";
 import UserService from "../services/user.service";
 import { setUserCookies, clearUserCookies } from "../utils";
 import Cookie from "js-cookie";
+import socket from "../socket";
 
 const authService = new AuthService(`${import.meta.env.VITE_BASE_URL}/api/v1`);
 const userService = new UserService(`${import.meta.env.VITE_BASE_URL}/api/v1`);
@@ -156,7 +157,7 @@ const userSlice = createSlice({
         const user = payload?.metadata?.user;
 
         setUserCookies({ uid: user.id, refreshToken: tokens?.refreshToken });
-
+        socket.connect();
         return {
           ...state,
           isLoading: false,
@@ -185,6 +186,7 @@ const userSlice = createSlice({
         if (payload?.rememberMe) {
           setUserCookies({ uid: user.id, refreshToken: tokens?.refreshToken });
         }
+        socket.connect();
 
         return {
           ...state,
@@ -207,6 +209,7 @@ const userSlice = createSlice({
       })
       .addCase(signOut.fulfilled, (state, { payload }) => {
         clearUserCookies();
+        socket.disconnect();
         return {
           ...state,
           isLoading: false,
@@ -293,7 +296,7 @@ const userSlice = createSlice({
         const user = payload?.metadata?.user;
 
         setUserCookies({ uid: user.id, refreshToken: tokens?.refreshToken });
-
+        socket.connect();
         return {
           ...state,
           isLoading: false,

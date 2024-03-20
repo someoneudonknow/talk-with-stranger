@@ -36,14 +36,14 @@ const useMedia = (defaultConfig = { audio: true, video: true }, videoRef) => {
 
     return () => {
       if (mediaObj.current) {
-        videoRef.current?.removeEventListener(
+        videoRef?.current?.removeEventListener(
           "volumechange",
           handleLocalVolume
         );
         mediaObj.current.clearStream();
       }
     };
-  }, []);
+  }, [videoRef]);
 
   useEffect(() => {
     if (options.video) {

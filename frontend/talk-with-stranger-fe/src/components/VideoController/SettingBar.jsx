@@ -8,7 +8,7 @@ import {
   VolumeUp,
 } from "@mui/icons-material";
 import { Button, IconButton, Slider, Stack } from "@mui/material";
-import React, { useState } from "react";
+import LoadingButton from "@mui/lab/LoadingButton";
 
 const SettingBarFullControl = ({
   onVolumeChange,
@@ -18,6 +18,7 @@ const SettingBarFullControl = ({
   onCameraBtnClicked,
   cameraOff,
   onSkipBtnClicked,
+  loading,
 }) => {
   return (
     <Stack
@@ -50,13 +51,15 @@ const SettingBarFullControl = ({
       <IconButton onClick={onCameraBtnClicked} sx={{ color: "white" }}>
         {!cameraOff ? <CameraAlt /> : <NoPhotography />}
       </IconButton>
-      <Button
+      <LoadingButton
+        loading={loading}
         onClick={onSkipBtnClicked}
         sx={{ marginLeft: "auto" }}
+        color="primary"
         variant="contained"
       >
         Find Next
-      </Button>
+      </LoadingButton>
     </Stack>
   );
 };

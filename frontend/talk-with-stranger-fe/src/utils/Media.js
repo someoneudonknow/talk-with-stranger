@@ -20,7 +20,7 @@ class Media {
       .getTracks()
       .find((track) => track.kind === "audio");
 
-    if (audioTrack.enabled === true) {
+    if (audioTrack?.enabled === true) {
       audioTrack.enabled = false;
     }
   }
@@ -32,7 +32,7 @@ class Media {
       .getTracks()
       .find((track) => track.kind === "audio");
 
-    if (audioTrack.enabled === false) {
+    if (audioTrack?.enabled === false) {
       audioTrack.enabled = true;
     }
   }
@@ -44,7 +44,7 @@ class Media {
       .getTracks()
       .find((track) => track.kind === "video");
 
-    if (videoTrack.enabled === false) {
+    if (videoTrack?.enabled === false) {
       videoTrack.enabled = true;
     }
   }
@@ -56,7 +56,7 @@ class Media {
       .getTracks()
       .find((track) => track.kind === "video");
 
-    if (videoTrack.enabled === true) {
+    if (videoTrack?.enabled === true) {
       videoTrack.enabled = false;
     }
   }

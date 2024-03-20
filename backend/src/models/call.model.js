@@ -1,6 +1,6 @@
 "use strict";
 
-const TABLE_NAME = "call";
+const TABLE_NAME = "calls";
 
 module.exports = (sequelize, { DataTypes }) => {
   const call = sequelize.define(

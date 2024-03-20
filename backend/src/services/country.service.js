@@ -1,5 +1,6 @@
 "use strict";
 
+const { Op } = require("sequelize");
 const { BadRequestError, NotFoundError } = require("../core/error.response");
 const db = require("../db/init.mysql");
 
@@ -28,9 +29,10 @@ class CountryService {
     if (!countryName || !countryCode || !countryIsoCode)
       throw new BadRequestError("Invalid country");
     //Check exists
+    console.log({ countryCode, countryIsoCode, countryName });
     const foundCountry = await db.Country.findOne({
       where: {
-        $or: [
+        [Op.or]: [
           { country_code: countryCode },
           { country_iso_code: countryIsoCode },
           { country_name: countryName },
@@ -38,7 +40,7 @@ class CountryService {
       },
     });
     if (foundCountry) throw new BadRequestError("Country is exists");
-
+    console.log({ countryCode, countryIsoCode, countryName });
     //Add new country
     try {
       const newCountry = await db.Country.create({

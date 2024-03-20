@@ -32,10 +32,11 @@ const RootView = () => {
   useEffect(() => {
     const refreshTokenStore = Cookie.get("refreshToken");
     const uid = Cookie.get("uid");
+
     if (refreshTokenStore && uid) {
       dispatch(refreshToken({ refreshToken: refreshTokenStore, uid }));
     }
-  }, []);
+  }, [dispatch]);
 
   return (
     <main

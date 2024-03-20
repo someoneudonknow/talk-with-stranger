@@ -76,8 +76,8 @@ class DB {
   }
 
   async sync() {
-    // await this.dropOldFkConstraints();
-    // await this.dropOldIndexes();
+    await this.dropOldFkConstraints();
+    await this.dropOldIndexes();
     await this.sequelize.sync({ alter: true });
   }
 
@@ -113,7 +113,9 @@ class DB {
         .filter((i) => i.match(/[a-zA-Z]+_ibfk_\w*/));
 
       for (const k of keys) {
-        await this.sequelize.query(`ALTER TABLE ${t} DROP FOREIGN KEY ${k}`);
+        await this.sequelize.query(
+          `ALTER TABLE \`${t}\` DROP FOREIGN KEY ${k}`
+        );
       }
     }
   }

@@ -1,6 +1,6 @@
 "use strict";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { Peer } from "peerjs";
 
 const usePeer = (onCall) => {
@@ -14,7 +14,7 @@ const usePeer = (onCall) => {
     }
 
     if (peerInstance) {
-      peerInstance.on("open", (id) => {
+      peerInstance.on("open", () => {
         setLoading(false);
       });
     }
@@ -27,9 +27,16 @@ const usePeer = (onCall) => {
   }, [peerInstance]);
 
   useEffect(() => {
+    let callEventSubscription;
     if (peerInstance) {
-      peerInstance.on("call", onCall);
+      callEventSubscription = peerInstance.on("call", onCall);
     }
+
+    return () => {
+      if (callEventSubscription) {
+        callEventSubscription.off("call", onCall);
+      }
+    };
   }, [peerInstance, onCall]);
 
   return [peerInstance, loading];

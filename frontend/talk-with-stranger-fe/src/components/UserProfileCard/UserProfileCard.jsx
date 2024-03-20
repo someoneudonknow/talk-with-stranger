@@ -17,7 +17,7 @@ const UserProfileCard = ({ user, onAvatarSelect, onBackgroundSelect }) => {
   const [hover, setHover] = useState(false);
   const avatarRef = useRef();
   const backgroundRef = useRef();
-  console.log({ user_country });
+
   const calculateAge = useMemo(() => {
     if (!user_dob) return "unknown";
 

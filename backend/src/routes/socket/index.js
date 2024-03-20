@@ -2,12 +2,10 @@
 
 const connectionRouter = require("./connection/index.js");
 const conservationRouter = require("./conservation");
+const messageRouter = require("./message");
 
 module.exports = (socket) => {
   connectionRouter(socket);
   conservationRouter(socket);
-
-  socket.on("message", (message) => {
-    console.log(message);
-  });
+  messageRouter(socket);
 };

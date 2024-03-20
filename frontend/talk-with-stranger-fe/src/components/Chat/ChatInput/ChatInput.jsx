@@ -3,7 +3,7 @@ import { Box, Button, Stack, TextField } from "@mui/material";
 import React from "react";
 import { useForm } from "react-hook-form";
 
-const ChatInput = ({ onMessageSend }) => {
+const ChatInput = ({ onMessageSend, disabled }) => {
   const { register, handleSubmit, setValue } = useForm();
 
   return (
@@ -23,6 +23,7 @@ const ChatInput = ({ onMessageSend }) => {
           })}
         />
         <Button
+          disabled={disabled}
           type="submit"
           sx={{ ml: 2, minWidth: "70px" }}
           variant="contained"

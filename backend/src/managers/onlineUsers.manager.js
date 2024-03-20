@@ -51,10 +51,13 @@ class OnlineUserManager {
 
     this.pairingQueue.push(userInfo);
 
+    console.log(this.pairingQueue.map((u) => u.userName));
+
     if (this.pairingQueue.length >= this.maxQueueSize) {
+      console.log("pairing");
       const user1 = this.pairingQueue.shift();
       const user2 = this.pairingQueue.shift();
-      const roomId = Date.now();
+      const roomId = `room-${Date.now()}`;
 
       user1.socket.join(roomId);
       user2.socket.join(roomId);
@@ -67,6 +70,7 @@ class OnlineUserManager {
     } else {
       global._io.to(userInfo.socket?.id).emit("conservation/founding");
     }
+    console.log(this.pairingQueue.map((u) => u.userName));
   }
 
   removeConnectionFromPairingQueue(userId) {
@@ -76,6 +80,7 @@ class OnlineUserManager {
         1
       );
     }
+    console.log(this.pairingQueue.map((u) => u.userName));
   }
 }
 

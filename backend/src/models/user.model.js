@@ -58,7 +58,7 @@ module.exports = (sequelize, { DataTypes }) => {
       user_country: {
         type: DataTypes.UUID,
         references: {
-          model: "Country",
+          model: "country",
           key: "id",
         },
       },

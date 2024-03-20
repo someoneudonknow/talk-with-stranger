@@ -7,18 +7,23 @@ import {
   Stack,
   TextField,
 } from "@mui/material";
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import { useForm } from "react-hook-form";
 import ChatMessageItem from "../ChatMessageItem/ChatMessageItem";
 
 const ChatBar = ({ messages }) => {
+  const messagesEndRef = useRef(null);
+
+  useEffect(() => {
+    // Scroll to the bottom when messages change or new message is added
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages]);
   return (
     <Box
       component="div"
       sx={{
         display: "flex",
         flexDirection: "column",
-        // height: "100%",
         width: "100%",
       }}
     >
@@ -26,6 +31,7 @@ const ChatBar = ({ messages }) => {
         spacing={1}
         sx={{
           overflow: "auto",
+          paddingBottom: "10px",
           width: "100%",
           display: "flex",
         }}
@@ -37,10 +43,11 @@ const ChatBar = ({ messages }) => {
             messageRight={!message.isSender}
             sendAt={message.sendAt}
             text={message.text}
-            username={message.username}
+            username={message.userName}
           />
         ))}
       </Stack>
+      <div ref={messagesEndRef} /> {/* Ref element to scroll to */}
     </Box>
   );
 };

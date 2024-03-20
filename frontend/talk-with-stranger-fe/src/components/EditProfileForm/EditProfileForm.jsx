@@ -55,7 +55,7 @@ const EditProfileForm = ({ onSubmit, initialValue }) => {
       user_last_name: data?.editLastName,
       user_major: data?.major,
       user_dob: data?.userDob.toDate(),
-      user_country: selectedCountry.id,
+      user_country: selectedCountry?.id,
       user_gender: gender,
       user_description: data.userDesc,
     };
